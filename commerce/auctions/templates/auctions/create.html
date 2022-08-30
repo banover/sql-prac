@@ -1,0 +1,19 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Create Listings</h2>
+
+    <form action="{% url 'create' %}" method="POST">
+        <label for="create_category">Category:</label>
+        <input type="text" name="category" id="create_category" placeholder="category" required>
+        <label for="create_title">Title:</label>
+        <input type="text" name="title" id="create_title" placeholder="title" required>
+        <label for="create_bid">Starting bid:</label>
+        <input type="number" step=0.01 name="bid" id="create_bid" placeholder="starting bid" required>
+        <label for="create_img">Prompt url for an image:</label>
+        <input type="url" name="img" id="create_img">      
+        <input type="submit" value="Create">
+    </form>
+
+    
+{% endblock %}

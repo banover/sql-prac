@@ -3,8 +3,10 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from datetime import datetime
 
-from .models import User
+
+from .models import User, Auction_list, Bid, Comment, Category, Image_url
 
 
 def index(request):
@@ -61,3 +63,32 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "auctions/register.html")
+
+
+def create(request):
+    if request.method == "GET":
+        return render(request, "auctions/create.html")
+
+    else:
+        category = request.POST["category"]
+        title = request.POST["title"] # 따로 model 만들 예정 만든후 밑에 insert작문하기
+        bid = request.POST["bid"] # int() 적용할지 말지 check
+        comment = request.POST["comment"]
+        image_url = request.POST["img"]
+        time = datetime.now()
+
+        create_category = Category(category=f"{category}")
+        create_category.save()
+        create_bid = Bid()
+        create_bid.save()
+        create_comment = Comment(comment=f"{comment}")
+        create_comment.save()
+        create_img_url = Image_url(image_url=f"{image_url}")
+        create_img_url.save()
+        create_list = Auction_list(user_id="", item_category=create_category, item_name="", item_bid=create_bid, item_comment=create_comment, item_img_url=create_img_url, datetime=time)
+        create_list.save()
+
+from .models import User, Auction_list, Bid, Comment, Category, Image_url
+
+
+

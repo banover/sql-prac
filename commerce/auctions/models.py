@@ -1,47 +1,56 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.conf import settings
 
-class Image_url(models.Model):
-    image_url = models.CharField(max_length=64, default=None)
+
+class Title(models.Model):
+    title = models.CharField(max_length=64)
 
     def __str__(self):
-        return f"img_url : {self.image_url}"
+        return f"title : {self.title}"
+
+
+class Image_url(models.Model):
+    image_url = models.CharField(max_length=500, default=None)
+
+    def __str__(self):
+        return f"{self.image_url}"
 
 
 class Category(models.Model):
     category = models.CharField(max_length=64, default=None)
 
     def __str__(self):
-        return f" category : {self.category}"
+        return f"{self.category}"
 
 
-class Comment(models.Model):
-    comment = models.CharField(max_length=500, default=None)
+class Comment(models.Model): # comment가 다른 id로 부터도 저장이되고 출력이 되게, title,user_id도 같이 등록해야할듯
+    comment = models.CharField(max_length=500, default=None) # user_id 정보 등록하기
 
     def __str__(self):
         return f"comment : {self.comment}"
 
 
-class Bid(models.Model):
+class Bid(models.Model): # 제일 큰 bid값이 page에 뜨게끔 설정
     user_id = models.CharField(max_length=30, default=None)
-    #item_name = models.ForeignKey(Auction_list, ) #title 따로 model 만든 다음에 foreingkey로 설정하자 
+    #item_name = models.ForeignKey(Auction_list, ) 
     bid = models.DecimalField(decimal_places=2, max_digits=20)
 
     def __str__(self):
-        return f"price : {self.bid}$ buyer : {self.user_id}"
+        return f"{self.bid}$"
 
 
-class Auction_list(models.Model): #title도 따로빼자
-    user_id = models.CharField(max_length=30, default=None)
+class Auction_list(models.Model): 
+    user_id = models.ForeignKey(settings.AUTH_USER_MODEL, default=None, on_delete=models.CASCADE, related_name="user")
     item_category = models.ForeignKey(Category, default=None, on_delete=models.CASCADE, related_name="item_category")
-    item_name = models.CharField(max_length=64)
+    item_name = models.ForeignKey(Title, default=None, on_delete=models.CASCADE, related_name="item_name")
     item_bid =  models.ForeignKey(Bid, default=0.00, on_delete=models.PROTECT, related_name="item_bid")
     item_comment = models.ForeignKey(Comment, default=None, on_delete=models.PROTECT, related_name="item_comment")
     item_img_url = models.ForeignKey(Image_url, default=None, on_delete=models.PROTECT, related_name="item_img_url")
     datetime = models.DateTimeField()
 
     def __str__(self):
-        return f"id : {self.id} seller : {self.user_id} | {self.item_category}, item = {self.item_name}, {self.item_bid}, {self.item_comment}, {self.item_img_url}, time = {self.datetime}"
+        return f"id : {self.id} seller : {self.user_id} | {self.item_category}, {self.item_name}, {self.item_bid}, {self.item_comment}, {self.item_img_url}, time = {self.datetime}"
 
 
 class User(AbstractUser):

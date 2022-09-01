@@ -1,12 +1,26 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h2>Listing Page</h2>
+    <h2>Listing Page</h2>    
+
     <ul>
     {% for list in auction_list %}
-        <a href="{% url 'listpage' list.item_name %}"><li> Item list {{ list.id }} | Title : {{ list.item_name }} | Comment : {{ list.item_comment }} | bid : {{ list.item_bid }}</li></a>
-        <img src="{{ list.item_img_url }}" alt="a dog" width="300px" height="300px">
-        
+    
+        <img src="{{ list.item_img_url }}" alt="a dog" width="300px" height="300px"><br><br>
+        <h3>Detail</h3>
+        <li> List by : {{ list.user_id }}</li>
+        <li> Category : {{ list.item_category }}</li>
+        <li> Item id : {{ list.id }}</li>
+        <li> Title : {{ list.item_name }}</li>
+        <li> bid : {{ biggest_bid }}$</li>  <!--list.item_bid -->
+        <form action="{% url 'listpage' list.item_name %}" method="POST">
+            {% csrf_token %}
+            <input type="number" step=0.01 placeholder="Bid" name ="new_bid">
+            <input type="submit" value="Place Bid">
+        </form>
+        <li> Comment : {{ list.item_comment }}</li>
+        <li> {{ list.datetime }}</li>  
     {% endfor %}
     </ul>
+
 {% endblock %}

@@ -5,7 +5,7 @@
     <ul>
     {% for list in auction_list %}
         <a href="{% url 'listpage' list.item_name %}"><li> Item list {{ list.id }} | Title : {{ list.item_name }} | Category : {{ list.item_category }} | bid : {{ list.item_bid }}</li></a>
-        <img src="{{ list.item_img_url }}" alt="a dog" width="300px" height="300px">
+        <img src="{{ list.item_img_url }}" alt="img of item" width="300px" height="300px">
     {% endfor %}
     </ul>
 {% endblock %}

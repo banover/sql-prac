@@ -6,20 +6,40 @@
     <ul>
     {% for list in auction_list %}
     
-        <img src="{{ list.item_img_url }}" alt="a dog" width="300px" height="300px"><br><br>
+        <img src="{{ list.item_img_url }}" alt="img of item" width="300px" height="300px"><br><br>
         <h3>Detail</h3>
         <li> List by : {{ list.user_id }}</li>
         <li> Category : {{ list.item_category }}</li>
         <li> Item id : {{ list.id }}</li>
         <li> Title : {{ list.item_name }}</li>
-        <li> bid : {{ biggest_bid }}$</li>  <!--list.item_bid -->
+        <li> bid : {{ biggest_bid }}$</li>  
+        <!--test : {{ smallest_bid }}-->
         <form action="{% url 'listpage' list.item_name %}" method="POST">
             {% csrf_token %}
-            <input type="number" step=0.01 placeholder="Bid" name ="new_bid">
+                {% if smallest_bid < biggest_bid %}
+                    <input type="number" step=0.01 placeholder="Bid" name ="new_bid"  min="{{ next_bid }}">
+                {% else %}
+                    <input type="number" step=0.01 placeholder="Bid" name ="new_bid" min="{{ smallest_bid }}">
+                {% endif %}
             <input type="submit" value="Place Bid">
         </form>
-        <li> Comment : {{ list.item_comment }}</li>
-        <li> {{ list.datetime }}</li>  
+        {% for comment in comments %}
+            <li> Comment : {{ comment.comment }}</li> 
+        {% endfor %}
+        <form action="{% url 'listpage' list.item_name %}" method="POST">
+            {% csrf_token %}
+            <input type="textarea" placeholder="Comment" name ="new_comment">
+            <input type="submit" value="Upload Comment">
+        </form>
+        <li> {{ list.datetime }}</li>
+        Test : {{ loggedin_user }}
+        Test : {{ list.user_id }}
+        {% if list.user_id.id == loggedin_user %}        
+            <form action="{% url 'listpage' list.item_name %}" method="POST">
+                {% csrf_token %}
+                <input type="submit" value="Close Bid" name="end_bid"> <!-- -->
+            </form>
+        {% endif %}
     {% endfor %}
     </ul>
 

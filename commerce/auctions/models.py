@@ -3,6 +3,8 @@ from django.db import models
 from django.conf import settings
 
 
+
+
 class Title(models.Model):
     title = models.CharField(max_length=64)
 
@@ -45,6 +47,17 @@ class Bid(models.Model): # 제일 큰 bid값이 page에 뜨게끔 설정
         return f"{self.bid}$"
 
 
+class Transaction(models.Model):
+    item_name = models.ForeignKey(Title, default=None, on_delete=models.CASCADE, related_name="tran_item_name")
+    seller = models.ForeignKey(settings.AUTH_USER_MODEL, default=None, on_delete=models.CASCADE, related_name="tran_seller_user")
+    buyer = models.ForeignKey(settings.AUTH_USER_MODEL, default=None, on_delete=models.CASCADE, related_name="tran_buyer_user")
+    starting_bid = models.ForeignKey(Bid, default=0.00, on_delete=models.PROTECT, related_name="tran_st_bid")
+    selling_price = models.ForeignKey(Bid, default=0.00, on_delete=models.PROTECT, related_name="tran_selling_price")
+
+
+
+
+
 class Auction_list(models.Model): # auction_list랑 bid를 연결하는 새로운 모델을 만들어서 활용한다면? or Bid에 title을 추가? 두개다 해보자 ㅋ
     user_id = models.ForeignKey(settings.AUTH_USER_MODEL, default=None, on_delete=models.CASCADE, related_name="user")
     item_category = models.ForeignKey(Category, default=None, on_delete=models.CASCADE, related_name="item_category")
@@ -53,11 +66,21 @@ class Auction_list(models.Model): # auction_list랑 bid를 연결하는 새로�
     item_comment = models.ForeignKey(Comment, default=None, on_delete=models.PROTECT, related_name="item_comment")
     item_img_url = models.ForeignKey(Image_url, default=None, on_delete=models.PROTECT, related_name="item_img_url")
     datetime = models.DateTimeField()
+    state = models.CharField(max_length=6, default="open")
     # state 하나 만들어서 open/closed 기입해야할듯
 
     def __str__(self):
-        return f"id : {self.id} seller : {self.user_id} | {self.item_category}, {self.item_name}, {self.item_bid}, {self.item_comment}, {self.item_img_url}, time = {self.datetime}"
+        return f"id : {self.id} seller : {self.user_id} | {self.item_category}, {self.item_name}, {self.item_bid}, {self.item_comment}, {self.item_img_url}, time = {self.datetime}, state = {self.state}"
 
+
+class Watchlist(models.Model):
+    username = models.ForeignKey(settings.AUTH_USER_MODEL, default=None, on_delete=models.CASCADE, related_name="watchlist_user")
+    item_name = models.ForeignKey(Title, default=None, on_delete=models.CASCADE, related_name="watchlist_item_name")
+    list = models.ForeignKey(Auction_list, default=None, on_delete=models.CASCADE, related_name="watchlist_list")
+
+    def __str__(self):
+        return f"{self.username} {self.item_name}"
+        
 
 class User(AbstractUser):
     pass

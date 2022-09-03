@@ -5,6 +5,13 @@
 
     <ul>
     {% for list in auction_list %}
+        {% if not list.user_id.id == loggedin_user %}
+            <form action="{% url 'listpage' list.item_name %}" method="POST">
+                {% csrf_token%}
+                <input type="hidden" value="{{ list.item_name }}" name="item_name">
+                <input type="submit" value="Watchlist" name="watchlist">       
+            </form>
+        {% endif %}
     
         <img src="{{ list.item_img_url }}" alt="img of item" width="300px" height="300px"><br><br>
         <h3>Detail</h3>
@@ -14,31 +21,48 @@
         <li> Title : {{ list.item_name }}</li>
         <li> bid : {{ biggest_bid }}$</li>  
         <!--test : {{ smallest_bid }}-->
-        <form action="{% url 'listpage' list.item_name %}" method="POST">
-            {% csrf_token %}
+
+        {% if bid_winner == None %}
+            <form action="{% url 'listpage' list.item_name %}" method="POST">
+
+                {% csrf_token %}
                 {% if smallest_bid < biggest_bid %}
                     <input type="number" step=0.01 placeholder="Bid" name ="new_bid"  min="{{ next_bid }}">
                 {% else %}
                     <input type="number" step=0.01 placeholder="Bid" name ="new_bid" min="{{ smallest_bid }}">
                 {% endif %}
-            <input type="submit" value="Place Bid">
-        </form>
+                    
+                <input type="submit" value="Place Bid">
+            </form>
+        {% else %}
+            bid is closed.
+        {% endif %}
+
+        {% if list.user_id.username == current_loged_in_username or bid_winner.username == current_loged_in_username %} <!-- 더블컬리로 로 표현될때는 primarykey에서 그에 맞는 값으로 전환되지만 컬리엔% 경우는 primarykey에서 값으로 전환이 안됨-->
+            <br>
+            The bid winner is : {{ bid_winner }}
+        {% endif %}
+
         {% for comment in comments %}
             <li> Comment : {{ comment.comment }}</li> 
         {% endfor %}
+
         <form action="{% url 'listpage' list.item_name %}" method="POST">
             {% csrf_token %}
             <input type="textarea" placeholder="Comment" name ="new_comment">
             <input type="submit" value="Upload Comment">
         </form>
         <li> {{ list.datetime }}</li>
-        Test : {{ loggedin_user }}
-        Test : {{ list.user_id }}
-        {% if list.user_id.id == loggedin_user %}        
-            <form action="{% url 'listpage' list.item_name %}" method="POST">
-                {% csrf_token %}
-                <input type="submit" value="Close Bid" name="end_bid"> <!-- -->
-            </form>
+        <!--Test : {{ loggedin_user }}
+        Test : {{ list.user_id }}-->
+
+        {% if state == "open" %}
+            {% if list.user_id.id == loggedin_user %}        
+                <form action="{% url 'listpage' list.item_name %}" method="POST">
+                    {% csrf_token %}
+                    <input type="submit" value="Close Bid" name="end_bid"> <!-- -->
+                </form>
+            {% endif %}
         {% endif %}
     {% endfor %}
     </ul>

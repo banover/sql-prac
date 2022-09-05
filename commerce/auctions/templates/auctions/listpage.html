@@ -44,7 +44,7 @@
         {% endif %}
 
         {% for comment in comments %}
-            <li> Comment : {{ comment.comment }}</li> 
+            <li> Comment : {{ comment.user_id }} - {{ comment.comment }}</li> 
         {% endfor %}
 
         <form action="{% url 'listpage' list.item_name %}" method="POST">

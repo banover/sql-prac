@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from datetime import datetime
 from django.db.models import Max, Min
+from django.contrib.auth.decorators import login_required
 
 
 from .models import User, Auction_list, Bid, Comment, Category, Image_url, Title,Transaction, Watchlist
@@ -69,6 +70,7 @@ def register(request):
         return render(request, "auctions/register.html")
 
 
+@login_required
 def create(request):
     if request.method == "GET":
         return render(request, "auctions/create.html")
@@ -105,6 +107,7 @@ def create(request):
         return HttpResponseRedirect(reverse("index")) 
 
 
+@login_required
 def listpage(request, title): # comment 입력할 수 있게
 
     # Earning title's id from title which is delivered
@@ -216,6 +219,7 @@ def listpage(request, title): # comment 입력할 수 있게
         return HttpResponseRedirect(reverse("listpage", args=(title,)))
 
 
+@login_required
 def watchlist(request):
 
     username = request.user.username
@@ -239,3 +243,23 @@ def watchlist(request):
         watchlist = Watchlist.objects.filter(username=user_id, item_name=item_name).delete()
 
         return HttpResponseRedirect(reverse("watchlist"))
+
+
+@login_required
+def category(request):
+
+    categories = Category.objects.all()
+
+    return render(request, "auctions/category.html", {
+        "categories" : categories 
+    })
+
+
+@login_required
+def category_listpage(request, category):
+
+    categorys = Category.objects.get(category=category)
+    list = Auction_list.objects.filter(item_category=categorys)
+    return render(request, "auctions/category_list.html", {
+        "category_list" : list
+    })

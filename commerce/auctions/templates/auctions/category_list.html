@@ -1,0 +1,11 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Category listings</h2>
+    <ul>
+    {% for list in category_list %}
+        <img src="{{ list.item_img_url }}" alt="img of item" width="300px" height="300px">
+        <a href="{% url 'listpage' list.item_name %}"><li> Item list {{ list.id }} | Title : {{ list.item_name }} | Category : {{ list.item_category }} | bid : {{ list.item_bid }}</li></a>        
+    {% endfor %}
+    </ul>
+{% endblock %}
